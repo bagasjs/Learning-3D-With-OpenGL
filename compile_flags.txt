@@ -1,0 +1,4 @@
+-Iinclude
+-Ivendor/glfw/include
+-Ivendor/glad/include
+-Ivendor/glm/include
