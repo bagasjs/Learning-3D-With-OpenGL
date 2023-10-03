@@ -10,7 +10,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "Texture2D.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -76,56 +80,58 @@ int main(void) {
 
     uint32_t vboID = 0;
     float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f,
-        +0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f,
-        +0.5f, +0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f,
-        +0.5f, +0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f,
-        -0.5f, +0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        +0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        +0.5f, +0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        +0.5f, +0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, +0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 1.0f,
-        +0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 1.0f,
-        +0.5f, +0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 1.0f,
-        +0.5f, +0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 1.0f,
-        -0.5f, +0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, +0.5f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        +0.5f, -0.5f, +0.5f,  0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        +0.5f, +0.5f, +0.5f,  0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        +0.5f, +0.5f, +0.5f,  0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, +0.5f, +0.5f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, +0.5f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 
-        -0.5f, +0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 1.0f,
-        -0.5f, +0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 1.0f,
-        -0.5f, +0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 1.0f,
+        -0.5f, +0.5f, +0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+        -0.5f, +0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, +0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, +0.5f, +0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
 
-        0.5f, +0.5f,  0.5f,  1.0f, 1.0f, 0.0f, 1.0f,
-        0.5f, +0.5f, -0.5f,  1.0f, 1.0f, 0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f, 1.0f,
-        0.5f, +0.5f,  0.5f,  1.0f, 1.0f, 0.0f, 1.0f,
+        +0.5f, +0.5f, +0.5f,  1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        +0.5f, +0.5f, -0.5f,  1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        +0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        +0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        +0.5f, -0.5f, +0.5f,  1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+        +0.5f, +0.5f, +0.5f,  1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f, 1.0f,
-        +0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f, 1.0f,
-        +0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f, 1.0f,
-        +0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+        +0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+        +0.5f, -0.5f, +0.5f,  0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        +0.5f, -0.5f, +0.5f,  0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, +0.5f,  0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
 
-        -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f, 1.0f,
-        +0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f, 1.0f,
-        +0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f, 1.0f,
-        +0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f, 1.0f,
+        -0.5f, +0.5f, -0.5f,  1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+        +0.5f, +0.5f, -0.5f,  1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+        +0.5f, +0.5f, +0.5f,  1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        +0.5f, +0.5f, +0.5f,  1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, +0.5f, +0.5f,  1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, +0.5f, -0.5f,  1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
     };
 
     glGenBuffers(1, &vboID);
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*7, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*9, (void*)0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float)*7, (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float)*9, (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)*9, (void*)(7*sizeof(float)));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
 
@@ -145,15 +151,7 @@ int main(void) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
-    glUseProgram(shader.GetID());
-
-    glm::mat4 uProj = glm::mat4(1.0f);
-    glm::mat4 uModel = glm::mat4(1.0f);
-    glm::mat4 uView = glm::mat4(1.0f);
-    uProj = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 
-            0.1f, 100.0f);
-    shader.SetUniform("u_Proj", Shader::Type::MAT4, 1, glm::value_ptr(uProj), false);
-
+    shader.Enable();
     if(shader.GetUniformLocation("u_Proj") < 0) {
         std::cerr << "Invalid uniform " << "u_Proj" << std::endl;
     }
@@ -163,6 +161,26 @@ int main(void) {
     if(shader.GetUniformLocation("u_Model") < 0) {
         std::cerr << "Invalid uniform " << "u_Model" << std::endl;
     }
+
+
+    glm::mat4 uProj = glm::mat4(1.0f);
+    glm::mat4 uModel = glm::mat4(1.0f);
+    glm::mat4 uView = glm::mat4(1.0f);
+    uProj = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 
+            0.1f, 100.0f);
+    shader.SetUniform("u_Proj", Shader::Type::MAT4, 1, glm::value_ptr(uProj), false);
+
+    int width, height, channels;
+    width = height = channels = 0;
+    stbi_uc* data = stbi_load("./resources/bricks.jpg", &width, &height, &channels, 0);
+    Texture2D texture((int8_t*)data, width, height, channels);
+
+    if(shader.GetUniformLocation("u_TextureSamplers") < 0) {
+        std::cerr << "Invalid uniform " << "u_TextureSamplers" << std::endl;
+    }
+    texture.Enable(1);
+    int samplers[] = { 1 };
+    shader.SetUniform("u_TextureSamplers", Shader::Type::INT, 1, &samplers, false);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     while(!glfwWindowShouldClose(window)) {
@@ -174,6 +192,7 @@ int main(void) {
         shader.SetUniform("u_Model", Shader::Type::MAT4, 1, glm::value_ptr(uModel), false);
 
         glBindVertexArray(vaoID);
+        shader.Enable();
         glDrawArrays(GL_TRIANGLES, 0, 36);
         // glDrawElements(GL_TRIANGLES, sizeof(elements)/sizeof(uint32_t), GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);

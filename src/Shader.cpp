@@ -11,6 +11,11 @@ int Shader::GetUniformLocation(const std::string& name) const
     return location;
 }
 
+void Shader::Enable()
+{
+    glUseProgram(m_ID);
+}
+
 void Shader::SetUniform(const std::string& name, Type type, int count, const void* data, bool transponse)
 {
     int location = GetUniformLocation(name);

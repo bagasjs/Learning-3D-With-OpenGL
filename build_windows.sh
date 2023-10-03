@@ -2,7 +2,7 @@ set -xe
 
 cc="clang"
 cxx="clang++"
-cxxflags="-Ivendor/glad/include -Ivendor/glfw/include -Ivendor/glm/include"
+cxxflags="-Ivendor/glad/include -Ivendor/glfw/include -Ivendor/glm/include -Ivendor/stb/include"
 ldflags="-luser32 -lopengl32 -lgdi32 -lshell32"
 
 if [ ! -d ./build/ ]; then
@@ -19,11 +19,11 @@ fi
 
 $cxx $cxxflags -Wall -Wextra -c -o ./build/bin-int/main.o ./src/main.cpp
 $cxx $cxxflags -Wall -Wextra -c -o ./build/bin-int/Shader.o ./src/Shader.cpp
-$cxx $cxxflags -Wall -Wextra -c -o ./build/bin-int/RenderWindow.o ./src/RenderWindow.cpp
+$cxx $cxxflags -Wall -Wextra -c -o ./build/bin-int/Texture2D.o ./src/Texture2D.cpp
 $cxx $ldflags -o ./build/bin/main.exe \
     ./build/bin-int/main.o \
     ./build/bin-int/Shader.o \
-    ./build/bin-int/RenderWindow.o \
+    ./build/bin-int/Texture2D.o \
     ./build/bin-int/glfw/context.o \
     ./build/bin-int/glfw/wgl_context.o \
     ./build/bin-int/glfw/egl_context.o \

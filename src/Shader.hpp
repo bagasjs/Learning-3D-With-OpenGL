@@ -25,6 +25,7 @@ public:
     inline std::string Why() const  { return m_Reason; }
     int GetUniformLocation(const std::string& name) const;
     void SetUniform(const std::string& name, Type type, int count, const void* data, bool transponse);
+    void Enable(void);
 
 private:
     uint32_t LoadModule(int type, const std::string& source);
